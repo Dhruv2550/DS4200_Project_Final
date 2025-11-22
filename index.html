@@ -53,8 +53,8 @@
                 <div class="references">
                     <h3>References</h3>
                     <ul>
-                        <li><a href="#" target="_blank">Social and Built Environmental Correlates of Predicted Blood Lead Levels in the Flint Water Crisis - PMC</a></li>
-                        <li><a href="#" target="_blank">Air pollution and its impact on cancer incidence, cancer care and cancer outcomes - PMC</a></li>
+                        <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5555375/" target="_blank">Social and Built Environmental Correlates of Predicted Blood Lead Levels in the Flint Water Crisis - PMC</a></li>
+                        <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8234030/" target="_blank">Air pollution and its impact on cancer incidence, cancer care and cancer outcomes - PMC</a></li>
                     </ul>
                 </div>
             </div>
@@ -110,14 +110,10 @@
                 <div class="visualization-container">
                     <h3>Air Pollution vs. COPD Prevalence</h3>
                     <div class="viz-description">
-                        <p>This scatter plot examines the relationship between air pollution concentrations and COPD prevalence rates, with data points colored by facility count to illustrate the intersection of industrial activity and health outcomes.</p>
+                        <p>This scatter plot shows the relationship between air pollution concentration (µg/m³) and COPD prevalence (%) across U.S. counties, with each point colored by the number of industrial facilities in that county. Most counties cluster in a band where air pollution ranges roughly from low to moderate levels, and COPD prevalence spans a wide range within that band. This suggests that pollution is not the only factor affecting COPD risk but it is one of several. Counties with higher facility counts tend to appear in areas with elevated air pollution, highlighting a link between industrial activity and air quality. Overall, the pattern highlights how industry, environment, and health overlap, and it draws attention to a few counties that stand out as potential hotspots for both poor air quality and higher COPD rates.</p>
                     </div>
                     <div class="visualization">
                         <img src="images/scatter_plot.png" alt="Air Pollution vs COPD Prevalence Scatter Plot" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
-                    </div>
-                    <div class="viz-takeaway">
-                        <h4>Key Takeaway:</h4>
-                        <p>A positive correlation exists between air pollution and COPD rates, with areas having higher industrial facility counts (shown in yellow/green) showing elevated pollution levels and respiratory health impacts.</p>
                     </div>
                 </div>
 
@@ -125,14 +121,10 @@
                 <div class="visualization-container">
                     <h3>Water Quality Violations by Demographics</h3>
                     <div class="viz-description">
-                        <p>This comparative bar chart displays the number of counties with recorded water quality violations, grouped by majority racial or ethnic population, highlighting significant demographic disparities in environmental risk exposure.</p>
+                        <p>This bar chart shows how many U.S. counties with drinking water violations fall into each majority race or ethnicity category. Most affected counties are majority White (807 counties), with much smaller counts for majority Black, American Indian/Alaska Native, and Asian counties. This pattern likely reflects the fact that most U.S. counties are majority White, but it also highlights that water quality problems occur across communities with different racial and ethnic majorities rather than being concentrated in just one group.</p>
                     </div>
                     <div class="visualization">
                         <img src="images/water_violations_chart.png" alt="Water Violations by Race/Ethnicity Bar Chart" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
-                    </div>
-                    <div class="viz-takeaway">
-                        <h4>Key Takeaway:</h4>
-                        <p>Counties with majority white populations experience 807 water quality violations, dramatically higher than all minority groups combined, revealing complex patterns in environmental enforcement and infrastructure investment.</p>
                     </div>
                 </div>
 
@@ -140,14 +132,10 @@
                 <div class="visualization-container">
                     <h3>Top 20 Counties by Industrial Facility Count</h3>
                     <div class="viz-description">
-                        <p>This horizontal bar chart identifies the counties with the highest concentration of industrial facilities, revealing geographic patterns of industrial activity across major metropolitan and industrial areas.</p>
+                        <p>This bar chart highlights the 20 U.S. counties with the highest number of industrial facilities. Harris County, TX and Los Angeles County, CA stand out with especially high facility counts, followed by large urban or industrial hubs like Cook County, IL and Jefferson County, TX. The pattern suggests that industrial activity is heavily concentrated in a relatively small set of major metropolitan and refinery/manufacturing regions, which may have important implications for local air and water quality, as well as environmental health risks for residents in these areas.</p>
                     </div>
                     <div class="visualization">
                         <img src="images/facility_count_chart.png" alt="Top 20 Counties by Industrial Facilities" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
-                    </div>
-                    <div class="viz-takeaway">
-                        <h4>Key Takeaway:</h4>
-                        <p>Major metropolitan counties like Harris, TX and Los Angeles, CA lead in industrial facility counts, with Cook, IL and Jefferson, TX also showing high concentrations, indicating potential environmental burden hotspots.</p>
                     </div>
                 </div>
 
@@ -186,37 +174,32 @@
         <!-- Findings Section -->
         <section id="findings" class="section">
             <div class="container">
-                <h2>Key Findings and Implications</h2>
+                <h2>Summary of Findings</h2>
+                
+                <div class="findings-summary">
+                    <p>Through comprehensive analysis of environmental, demographic, and health data across U.S. counties, this study reveals significant patterns of environmental inequality and their relationship to public health outcomes. Our visualizations demonstrate clear connections between industrial activity, environmental quality, and community health disparities.</p>
+                </div>
                 
                 <div class="findings-grid">
                     <div class="finding-card">
-                        <h3>Environmental Justice Patterns</h3>
-                        <p>Our analysis reveals clear patterns of environmental injustice, with low-income communities and communities of color experiencing disproportionately high exposure to environmental hazards including air pollution, toxic facilities, and water quality violations.</p>
+                        <h3>Industrial Activity Concentration</h3>
+                        <p>Industrial facilities are heavily concentrated in major metropolitan areas like Harris County, TX and Los Angeles County, CA, with the top 20 counties containing disproportionate numbers of facilities. This concentration creates localized environmental burden hotspots with significant implications for air and water quality in these regions.</p>
                     </div>
                     
                     <div class="finding-card">
-                        <h3>Health Outcome Disparities</h3>
-                        <p>Counties with higher pollution exposure show significantly elevated rates of cancer and COPD, with the strongest correlations observed in areas with lower median household incomes, highlighting the compounding effects of environmental and socioeconomic disadvantage.</p>
+                        <h3>Air Pollution and Respiratory Health</h3>
+                        <p>The relationship between air pollution and COPD prevalence shows that while pollution is not the sole factor affecting respiratory health, counties with higher industrial facility counts consistently show elevated air pollution levels, creating identifiable hotspots for poor air quality and higher COPD rates.</p>
                     </div>
                     
                     <div class="finding-card">
-                        <h3>Geographic Clustering</h3>
-                        <p>Environmental health disparities cluster geographically, particularly in industrial regions of the Southeast and areas with legacy pollution sources, suggesting the need for targeted regional policy interventions.</p>
+                        <h3>Water Quality Across Demographics</h3>
+                        <p>Water quality violations occur across communities of different racial and ethnic majorities, with the majority of affected counties being predominantly White. This pattern reflects broader population demographics but also demonstrates that water quality issues span diverse communities rather than being concentrated in specific demographic groups.</p>
                     </div>
-                </div>
-
-                <div class="recommendations">
-                    <h3>Policy Recommendations</h3>
-                    <ol>
-                        <li><strong>Targeted Environmental Justice Enforcement:</strong> Prioritize enforcement of environmental regulations in counties identified as having high pollution exposure and vulnerable populations.</li>
-                        <li><strong>Health Monitoring Programs:</strong> Implement enhanced health monitoring and early intervention programs in high-risk counties to address the elevated rates of cancer and COPD.</li>
-                        <li><strong>Community Investment:</strong> Direct infrastructure and economic development investments toward disadvantaged communities to address the underlying socioeconomic factors that exacerbate environmental health disparities.</li>
-                    </ol>
                 </div>
 
                 <div class="future-work">
-                    <h3>Future Research Directions</h3>
-                    <p>Future analysis could incorporate longitudinal health data to track changes over time, examine the effectiveness of specific policy interventions, and investigate additional environmental factors such as proximity to hazardous waste sites and climate change impacts on vulnerable communities.</p>
+                    <h3>Future Research and Policy Implications</h3>
+                    <p>Future research should examine longitudinal trends in environmental health disparities, investigate the effectiveness of current environmental regulations in high-burden areas, and explore targeted interventions for communities facing multiple environmental stressors. Policy makers should consider the concentrated nature of industrial activity when developing environmental health protections and ensure equitable enforcement across all communities.</p>
                 </div>
             </div>
         </section>
