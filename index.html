@@ -9,6 +9,40 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <style>
+        /* D3 specific styles */
+        .d3-bar { 
+            fill: #2e1065; 
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        .d3-bar:hover { 
+            fill: #6b21a8; 
+        }
+        .d3-axis { 
+            font: 12px sans-serif; 
+        }
+        .d3-axis path, 
+        .d3-axis line { 
+            fill: none; 
+            stroke: #000; 
+            shape-rendering: crispEdges; 
+        }
+        .d3-tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            pointer-events: none;
+            opacity: 0;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        .d3-chart-container {
+            position: relative;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -106,9 +140,9 @@
                 <h2>Interactive Data Visualizations</h2>
                 <p>Explore the relationship between environmental factors, demographics, and health outcomes through our interactive visualizations.</p>
 
-                <!-- Interactive Air Pollution vs COPD Scatter Plot -->
+                <!-- Interactive Air Pollution vs COPD Scatter Plot (Altair) -->
                 <div class="visualization-container">
-                    <h3>Air Pollution vs. COPD Prevalence</h3>
+                    <h3>Air Pollution vs. COPD Prevalence (Interactive Altair)</h3>
                     <div class="viz-description">
                         <p><strong>Interactive Features:</strong> 
                         <br>• <strong>Brush Selection:</strong> Drag to create a rectangular selection - highlighted points become more visible
@@ -121,9 +155,21 @@
                     </div>
                 </div>
 
-                <!-- Interactive Water Violations Bar Chart -->
+                <!-- D3.js Top Counties Bar Chart -->
                 <div class="visualization-container">
-                    <h3>Water Quality Violations by Demographics</h3>
+                    <h3>Top 20 Counties by Industrial Facilities (Interactive D3.js)</h3>
+                    <div class="viz-description">
+                        <p><strong>Interactive Features:</strong> Hover for detailed information, click bars to highlight. This bar chart uses D3.js to show the 20 U.S. counties with the highest number of industrial facilities, with interactive hover tooltips and click selection.</p>
+                    </div>
+                    <div class="d3-chart-container">
+                        <div id="d3-facilities-bar-chart" style="width: 100%;"></div>
+                        <div class="d3-tooltip"></div>
+                    </div>
+                </div>
+
+                <!-- Interactive Water Violations Bar Chart (Altair) -->
+                <div class="visualization-container">
+                    <h3>Water Quality Violations by Demographics (Interactive Altair)</h3>
                     <div class="viz-description">
                         <p><strong>Interactive Features:</strong> Hover for detailed counts and percentages, click bars to highlight. This bar chart shows how many U.S. counties with drinking water violations fall into each majority race or ethnicity category.</p>
                     </div>
@@ -132,11 +178,11 @@
                     </div>
                 </div>
 
-                <!-- Interactive Industrial Facilities Bar Chart -->
+                <!-- Interactive Industrial Facilities Bar Chart (Altair) -->
                 <div class="visualization-container">
-                    <h3>Top 20 Counties by Industrial Facility Count</h3>
+                    <h3>Top Counties by Industrial Facility Count (Interactive Altair)</h3>
                     <div class="viz-description">
-                        <p><strong>Interactive Features:</strong> Hover for exact counts, click to select counties, sort controls. This bar chart highlights the 20 U.S. counties with the highest number of industrial facilities.</p>
+                        <p><strong>Interactive Features:</strong> Hover for exact counts, click to select counties, sort controls. This Altair-based bar chart highlights the U.S. counties with the highest number of industrial facilities.</p>
                     </div>
                     <div style="margin-bottom: 15px;">
                         <label for="sort-control" style="font-weight: 600; margin-right: 10px;">Sort by:</label>
@@ -223,14 +269,17 @@
                 <div class="team-grid">
                     <div class="team-member">
                         <h3>Dhruv</h3>
+                        <p>Data merging and standardization, correlation analysis, scatter plot implementation (Altair), findings summary and recommendations</p>
                     </div>
                     
                     <div class="team-member">
                         <h3>Reagan</h3>
+                        <p>Data cleaning and geospatial processing, choropleth dashboard creation (D3), interactive features implementation, design explanations</p>
                     </div>
                     
                     <div class="team-member">
                         <h3>Shreyashi</h3>
+                        <p>Statistical analysis and spatial patterns, water violations bar chart, project introduction and data description, visualization takeaways</p>
                     </div>
                 </div>
             </div>
@@ -245,12 +294,15 @@
     </footer>
 
     <script>
-        // Load your data - replace with actual data loading
+        // Global data variable
+        let globalData = [];
+
+        // Load data function
         async function loadData() {
             try {
                 const data = await d3.csv('data/final_output.csv');
                 
-                // Convert string numbers to actual numbers for calculations
+                // Convert string numbers to actual numbers
                 data.forEach(d => {
                     d["Air Polution measured by Micrograms per cubic meter"] = +d["Air Polution measured by Micrograms per cubic meter"];
                     d["Percent_COPD"] = +d["Percent_COPD"];
@@ -268,8 +320,8 @@
                     d["Ethnicities.White Alone\t not Hispanic or Latino"] = +d["Ethnicities.White Alone\t not Hispanic or Latino"];
                 });
                 
+                globalData = data;
                 console.log("Data loaded:", data.length, "rows");
-                console.log("Sample row:", data[0]);
                 return data;
                 
             } catch (error) {
@@ -278,7 +330,128 @@
             }
         }
 
-        // Create interactive scatter plot
+        // Create D3.js bar chart for top facilities
+        function createD3FacilitiesChart(data) {
+            // Clear previous chart
+            d3.select("#d3-facilities-bar-chart").selectAll("*").remove();
+            
+            // Process data to get top 20 counties
+            const facilitiesData = data
+                .filter(d => d.amount_of_facilities && d.amount_of_facilities > 0 && d.County && d.Stabr)
+                .map(d => ({
+                    county_state: `${d.County}, ${d.Stabr}`,
+                    amount_of_facilities: +d.amount_of_facilities,
+                    copd_rate: +d.Percent_COPD || 0,
+                    air_pollution: +d["Air Polution measured by Micrograms per cubic meter"] || 0
+                }))
+                .sort((a, b) => b.amount_of_facilities - a.amount_of_facilities)
+                .slice(0, 20);
+
+            // Set dimensions and margins
+            const margin = {top: 20, right: 30, bottom: 60, left: 200};
+            const width = 700 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            // Create SVG
+            const svg = d3.select("#d3-facilities-bar-chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Create scales
+            const xScale = d3.scaleLinear()
+                .domain([0, d3.max(facilitiesData, d => d.amount_of_facilities)])
+                .range([0, width]);
+
+            const yScale = d3.scaleBand()
+                .domain(facilitiesData.map(d => d.county_state))
+                .range([0, height])
+                .padding(0.1);
+
+            // Color scale
+            const colorScale = d3.scaleSequential(d3.interpolateViridis)
+                .domain([0, d3.max(facilitiesData, d => d.amount_of_facilities)]);
+
+            // Create tooltip
+            const tooltip = d3.select(".d3-tooltip");
+
+            // Create bars
+            g.selectAll(".d3-bar")
+                .data(facilitiesData)
+                .enter()
+                .append("rect")
+                .attr("class", "d3-bar")
+                .attr("x", 0)
+                .attr("y", d => yScale(d.county_state))
+                .attr("width", d => xScale(d.amount_of_facilities))
+                .attr("height", yScale.bandwidth())
+                .attr("fill", d => colorScale(d.amount_of_facilities))
+                .on("mouseover", function(event, d) {
+                    d3.select(this).style("stroke", "black").style("stroke-width", "2px");
+                    tooltip.transition().duration(200).style("opacity", 1);
+                    tooltip.html(`
+                        <strong>${d.county_state}</strong><br/>
+                        Industrial Facilities: ${d.amount_of_facilities}<br/>
+                        COPD Rate: ${d.copd_rate.toFixed(1)}%<br/>
+                        Air Pollution: ${d.air_pollution.toFixed(1)} µg/m³
+                    `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).style("stroke", "none");
+                    tooltip.transition().duration(500).style("opacity", 0);
+                })
+                .on("click", function(event, d) {
+                    // Toggle selection
+                    const isSelected = d3.select(this).classed("selected");
+                    g.selectAll(".d3-bar").classed("selected", false).style("opacity", 1);
+                    if (!isSelected) {
+                        d3.select(this).classed("selected", true);
+                        g.selectAll(".d3-bar:not(.selected)").style("opacity", 0.5);
+                    }
+                });
+
+            // Add axes
+            g.append("g")
+                .attr("class", "d3-axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+
+            g.append("g")
+                .attr("class", "d3-axis")
+                .call(d3.axisLeft(yScale));
+
+            // Add axis labels
+            g.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-weight", "bold")
+                .text("County, State");
+
+            g.append("text")
+                .attr("transform", `translate(${width/2}, ${height + margin.bottom - 10})`)
+                .style("text-anchor", "middle")
+                .style("font-weight", "bold")
+                .text("Number of Industrial Facilities");
+
+            // Add title
+            g.append("text")
+                .attr("x", width / 2)
+                .attr("y", 0 - (margin.top / 2))
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .style("font-weight", "bold")
+                .text("Top 20 Counties by Industrial Facility Count");
+        }
+
+        // Create Altair scatter plot
         function createScatterPlot(data) {
             const scatterSpec = {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -347,7 +520,7 @@
 
         // Create water violations chart
         function createWaterViolationsChart(data) {
-            // First, calculate majority group for each county
+            // Calculate majority group for each county
             const dataWithMajority = data.map(d => {
                 const ethnicityColumns = {
                     'Ethnicities.White Alone': 'White',
@@ -374,7 +547,7 @@
                 return { ...d, majority_group: majorityGroup };
             });
 
-            // Process data for water violations by demographic group
+            // Process data for water violations
             const violationsData = dataWithMajority
                 .filter(d => d["Water Violation"] && d["Water Violation"].toString().toLowerCase() === "yes")
                 .reduce((acc, d) => {
@@ -441,11 +614,8 @@
             vegaEmbed('#water-violations-viz', waterSpec, {actions: false});
         }
 
-        // Create facilities bar chart
+        // Create Altair facilities bar chart
         function createFacilitiesChart(data, sortOrder = 'descending') {
-            console.log("Creating facilities chart with sort order:", sortOrder);
-            
-            // Filter and clean the data first
             let topFacilities = data
                 .filter(d => d.amount_of_facilities && d.amount_of_facilities > 0 && d.County && d.Stabr)
                 .map(d => ({
@@ -455,21 +625,16 @@
                     Air_Pollution: +d["Air Polution measured by Micrograms per cubic meter"] || 0
                 }));
 
-            // Apply sorting based on the parameter
+            // Apply sorting
             if (sortOrder === 'ascending') {
-                console.log("Sorting ascending by facility count");
                 topFacilities.sort((a, b) => a.amount_of_facilities - b.amount_of_facilities);
             } else if (sortOrder === 'alphabetical') {
-                console.log("Sorting alphabetically");
                 topFacilities.sort((a, b) => a.County_State.localeCompare(b.County_State));
-            } else { // descending
-                console.log("Sorting descending by facility count");
+            } else {
                 topFacilities.sort((a, b) => b.amount_of_facilities - a.amount_of_facilities);
             }
 
-            // Take top 20 after sorting
             topFacilities = topFacilities.slice(0, 20);
-            console.log("Top facilities after sorting:", topFacilities.length, "items");
 
             const barSpec = {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -489,7 +654,7 @@
                         "field": "County_State",
                         "type": "nominal",
                         "title": "County, State",
-                        "sort": null // Let the data order determine the sort
+                        "sort": null
                     },
                     "color": {
                         "field": "amount_of_facilities",
@@ -526,38 +691,19 @@
                 "height": 400
             };
 
-            console.log("Bar chart spec created, embedding...");
             vegaEmbed('#facilities-bar-viz', barSpec, {actions: false});
         }
 
-        // Initialize visualizations
+        // Initialize all visualizations
         loadData().then(data => {
-            console.log("Initializing visualizations with data:", data.length, "rows");
-            
             if (data.length === 0) {
                 console.error("No data loaded! Check if final_output.csv exists and is accessible.");
                 return;
             }
             
-            console.log("Sample data point:", data[0]);
-            console.log("Available columns:", Object.keys(data[0]));
-            
-            // Check for required columns
-            const requiredColumns = [
-                "Air Polution measured by Micrograms per cubic meter",
-                "Percent_COPD", 
-                "amount_of_facilities",
-                "County",
-                "Stabr",
-                "Water Violation"
-            ];
-            
-            const missingColumns = requiredColumns.filter(col => !(col in data[0]));
-            if (missingColumns.length > 0) {
-                console.error("Missing required columns:", missingColumns);
-            }
-            
+            console.log("Initializing all visualizations...");
             createScatterPlot(data);
+            createD3FacilitiesChart(data);
             createWaterViolationsChart(data);
             createFacilitiesChart(data);
         }).catch(error => {
@@ -566,11 +712,9 @@
 
         // Add sort control functionality
         document.getElementById('sort-control').addEventListener('change', function(e) {
-            console.log('Sort changed to:', e.target.value);
-            // Recreate the facilities chart with new sorting
-            loadData().then(data => {
-                createFacilitiesChart(data);
-            });
+            if (globalData.length > 0) {
+                createFacilitiesChart(globalData, e.target.value);
+            }
         });
     </script>
 </body>
