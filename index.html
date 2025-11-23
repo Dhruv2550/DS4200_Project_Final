@@ -471,24 +471,30 @@
                     },
                     "opacity": {
                         "condition": [
-                            {"param": "brush", "value": 0.8},
+                            {"param": "brush", "value": 0.9},
                             {"param": "click", "value": 0.9}
                         ],
-                        "value": 0.3
+                        "value": 0.1
                     },
                     "size": {
                         "condition": [
                             {"param": "click", "value": 80},
-                            {"param": "brush", "value": 50}
+                            {"param": "brush", "value": 60}
                         ],
-                        "value": 35
+                        "value": 25
                     },
                     "stroke": {
-                        "condition": {"param": "click", "value": "white"},
+                        "condition": [
+                            {"param": "click", "value": "white"},
+                            {"param": "brush", "value": "#ffff00"}
+                        ],
                         "value": null
                     },
                     "strokeWidth": {
-                        "condition": {"param": "click", "value": 2},
+                        "condition": [
+                            {"param": "click", "value": 2},
+                            {"param": "brush", "value": 2}
+                        ],
                         "value": 0
                     },
                     "tooltip": [
