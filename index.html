@@ -106,36 +106,44 @@
                 <h2>Interactive Data Visualizations</h2>
                 <p>Explore the relationship between environmental factors, demographics, and health outcomes through our interactive visualizations.</p>
 
-                <!-- Air Pollution vs COPD Scatter Plot -->
+                <!-- Interactive Air Pollution vs COPD Scatter Plot -->
                 <div class="visualization-container">
                     <h3>Air Pollution vs. COPD Prevalence</h3>
                     <div class="viz-description">
-                        <p>This scatter plot shows the relationship between air pollution concentration (µg/m³) and COPD prevalence (%) across U.S. counties, with each point colored by the number of industrial facilities in that county. Most counties cluster in a band where air pollution ranges roughly from low to moderate levels, and COPD prevalence spans a wide range within that band. This suggests that pollution is not the only factor affecting COPD risk but it is one of several. Counties with higher facility counts tend to appear in areas with elevated air pollution, highlighting a link between industrial activity and air quality. Overall, the pattern highlights how industry, environment, and health overlap, and it draws attention to a few counties that stand out as potential hotspots for both poor air quality and higher COPD rates.</p>
+                        <p><strong>Interactive Features:</strong> Hover for county details, pan and zoom to explore clusters, brush to select groups of counties. This scatter plot shows the relationship between air pollution concentration (µg/m³) and COPD prevalence (%) across U.S. counties, with each point colored by the number of industrial facilities in that county.</p>
                     </div>
                     <div class="visualization">
-                        <img src="images/scatter_plot.png" alt="Air Pollution vs COPD Prevalence Scatter Plot" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
+                        <div id="scatter-plot-viz" style="width: 100%;"></div>
                     </div>
                 </div>
 
-                <!-- Water Violations Bar Chart -->
+                <!-- Interactive Water Violations Bar Chart -->
                 <div class="visualization-container">
                     <h3>Water Quality Violations by Demographics</h3>
                     <div class="viz-description">
-                        <p>This bar chart shows how many U.S. counties with drinking water violations fall into each majority race or ethnicity category. Most affected counties are majority White (807 counties), with much smaller counts for majority Black, American Indian/Alaska Native, and Asian counties. This pattern likely reflects the fact that most U.S. counties are majority White, but it also highlights that water quality problems occur across communities with different racial and ethnic majorities rather than being concentrated in just one group.</p>
+                        <p><strong>Interactive Features:</strong> Hover for detailed counts and percentages, click bars to highlight. This bar chart shows how many U.S. counties with drinking water violations fall into each majority race or ethnicity category.</p>
                     </div>
                     <div class="visualization">
-                        <img src="images/water_violations_chart.png" alt="Water Violations by Race/Ethnicity Bar Chart" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
+                        <div id="water-violations-viz" style="width: 100%;"></div>
                     </div>
                 </div>
 
-                <!-- Industrial Facilities Bar Chart -->
+                <!-- Interactive Industrial Facilities Bar Chart -->
                 <div class="visualization-container">
                     <h3>Top 20 Counties by Industrial Facility Count</h3>
                     <div class="viz-description">
-                        <p>This bar chart highlights the 20 U.S. counties with the highest number of industrial facilities. Harris County, TX and Los Angeles County, CA stand out with especially high facility counts, followed by large urban or industrial hubs like Cook County, IL and Jefferson County, TX. The pattern suggests that industrial activity is heavily concentrated in a relatively small set of major metropolitan and refinery/manufacturing regions, which may have important implications for local air and water quality, as well as environmental health risks for residents in these areas.</p>
+                        <p><strong>Interactive Features:</strong> Hover for exact counts, click to select counties, sort controls. This bar chart highlights the 20 U.S. counties with the highest number of industrial facilities.</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label for="sort-control" style="font-weight: 600; margin-right: 10px;">Sort by:</label>
+                        <select id="sort-control" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="descending">Highest to Lowest</option>
+                            <option value="ascending">Lowest to Highest</option>
+                            <option value="alphabetical">Alphabetical</option>
+                        </select>
                     </div>
                     <div class="visualization">
-                        <img src="images/facility_count_chart.png" alt="Top 20 Counties by Industrial Facilities" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
+                        <div id="facilities-bar-viz" style="width: 100%;"></div>
                     </div>
                 </div>
 
@@ -232,6 +240,205 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script>
+        // Load your data - replace with actual data loading
+        async function loadData() {
+            try {
+                // For now, using sample data - replace with: 
+                // const data = await d3.csv('final_output.csv');
+                
+                // Sample data structure based on your dataset
+                const sampleData = [
+                    {
+                        "County": "Harris",
+                        "State": "TX", 
+                        "Stabr": "TX",
+                        "Air Polution measured by Micrograms per cubic meter": 9.2,
+                        "Percent_COPD": 5.8,
+                        "amount_of_facilities": 458,
+                        "majority_group": "Hispanic or Latino",
+                        "Water Violation": "Yes"
+                    },
+                    {
+                        "County": "Los Angeles",
+                        "State": "CA",
+                        "Stabr": "CA", 
+                        "Air Polution measured by Micrograms per cubic meter": 12.1,
+                        "Percent_COPD": 4.2,
+                        "amount_of_facilities": 298,
+                        "majority_group": "Hispanic or Latino",
+                        "Water Violation": "No"
+                    }
+                    // Add more sample data points as needed
+                ];
+                
+                return sampleData;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return [];
+            }
+        }
+
+        // Create interactive scatter plot
+        function createScatterPlot(data) {
+            const scatterSpec = {
+                "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+                "data": {"values": data},
+                "mark": {"type": "circle", "size": 60, "opacity": 0.8},
+                "encoding": {
+                    "x": {
+                        "field": "Air Polution measured by Micrograms per cubic meter",
+                        "type": "quantitative",
+                        "title": "Air Pollution (µg/m³)"
+                    },
+                    "y": {
+                        "field": "Percent_COPD",
+                        "type": "quantitative",
+                        "title": "COPD Prevalence (%)"
+                    },
+                    "color": {
+                        "field": "amount_of_facilities",
+                        "type": "quantitative",
+                        "scale": {"scheme": "viridis"},
+                        "title": "Facility Count"
+                    },
+                    "tooltip": [
+                        {"field": "County", "type": "nominal"},
+                        {"field": "Stabr", "type": "nominal", "title": "State"},
+                        {"field": "Percent_COPD", "type": "quantitative", "title": "COPD Prevalence (%)"},
+                        {"field": "Air Polution measured by Micrograms per cubic meter", "type": "quantitative", "title": "Air Pollution (µg/m³)"},
+                        {"field": "amount_of_facilities", "type": "quantitative", "title": "Industrial Facilities"}
+                    ]
+                },
+                "selection": {
+                    "brush": {"type": "interval", "encodings": ["x", "y"]},
+                    "click": {"type": "multi"}
+                },
+                "width": 700,
+                "height": 400
+            };
+
+            vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false});
+        }
+
+        // Create water violations chart
+        function createWaterViolationsChart(data) {
+            // Process data for water violations by demographic group
+            const violationsData = data
+                .filter(d => d["Water Violation"] === "Yes")
+                .reduce((acc, d) => {
+                    acc[d.majority_group] = (acc[d.majority_group] || 0) + 1;
+                    return acc;
+                }, {});
+
+            const violationsArray = Object.entries(violationsData)
+                .map(([group, count]) => ({
+                    majority_group: group,
+                    counties_with_violations: count
+                }))
+                .sort((a, b) => b.counties_with_violations - a.counties_with_violations);
+
+            const waterSpec = {
+                "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+                "data": {"values": violationsArray},
+                "mark": {
+                    "type": "bar",
+                    "color": "#3b0764",
+                    "cornerRadius": 4
+                },
+                "encoding": {
+                    "x": {
+                        "field": "majority_group",
+                        "type": "nominal",
+                        "sort": "-y",
+                        "title": "Majority Race/Ethnicity",
+                        "axis": {"labelAngle": -20}
+                    },
+                    "y": {
+                        "field": "counties_with_violations",
+                        "type": "quantitative",
+                        "title": "Number of Counties with Water Violations"
+                    },
+                    "tooltip": [
+                        {"field": "majority_group", "type": "nominal", "title": "Majority Group"},
+                        {"field": "counties_with_violations", "type": "quantitative", "title": "Counties with Violations"}
+                    ]
+                },
+                "selection": {
+                    "click": {"type": "multi"}
+                },
+                "width": 650,
+                "height": 400
+            };
+
+            vegaEmbed('#water-violations-viz', waterSpec, {actions: false});
+        }
+
+        // Create facilities bar chart
+        function createFacilitiesChart(data) {
+            const topFacilities = data
+                .sort((a, b) => b.amount_of_facilities - a.amount_of_facilities)
+                .slice(0, 20)
+                .map(d => ({
+                    ...d,
+                    County_State: `${d.County}, ${d.Stabr}`
+                }));
+
+            const barSpec = {
+                "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+                "data": {"values": topFacilities},
+                "mark": {
+                    "type": "bar",
+                    "cornerRadius": 4
+                },
+                "encoding": {
+                    "x": {
+                        "field": "amount_of_facilities",
+                        "type": "quantitative",
+                        "title": "Number of Facilities"
+                    },
+                    "y": {
+                        "field": "County_State",
+                        "type": "nominal",
+                        "sort": "-x",
+                        "title": "County, State"
+                    },
+                    "color": {
+                        "field": "amount_of_facilities",
+                        "type": "quantitative",
+                        "scale": {"range": ["#2e1065", "#ede9fe"]},
+                        "title": "Facility Count"
+                    },
+                    "tooltip": [
+                        {"field": "County_State", "type": "nominal"},
+                        {"field": "amount_of_facilities", "type": "quantitative", "title": "Industrial Facilities"}
+                    ]
+                },
+                "selection": {
+                    "click": {"type": "multi"}
+                },
+                "width": 700,
+                "height": 400
+            };
+
+            vegaEmbed('#facilities-bar-viz', barSpec, {actions: false});
+        }
+
+        // Initialize visualizations
+        loadData().then(data => {
+            createScatterPlot(data);
+            createWaterViolationsChart(data);
+            createFacilitiesChart(data);
+        });
+
+        // Add sort control functionality
+        document.getElementById('sort-control').addEventListener('change', function(e) {
+            console.log('Sort changed to:', e.target.value);
+            // Recreate the facilities chart with new sorting
+            loadData().then(data => {
+                createFacilitiesChart(data);
+            });
+        });
+    </script>
 </body>
 </html>
