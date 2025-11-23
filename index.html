@@ -465,14 +465,14 @@
                         "field": "Air Polution measured by Micrograms per cubic meter",
                         "type": "quantitative",
                         "title": "Air Pollution (µg/m³)",
-                        "scale": {"domain": {"param": "zoom_x"}},
+                        "scale": {"domain": {"param": "zoom"}},
                         "axis": {"grid": true}
                     },
                     "y": {
                         "field": "Percent_COPD",
                         "type": "quantitative",
                         "title": "COPD Prevalence (%)",
-                        "scale": {"domain": {"param": "zoom_y"}},
+                        "scale": {"domain": {"param": "zoom"}},
                         "axis": {"grid": true}
                     },
                     "color": {
@@ -543,10 +543,13 @@
                 },
                 "params": [
                     {
-                        "name": "zoom_x"
-                    },
-                    {
-                        "name": "zoom_y"
+                        "name": "zoom",
+                        "select": {
+                            "type": "interval",
+                            "bind": "scales",
+                            "zoom": "wheel",
+                            "translate": "[mousedown, window:mouseup] > window:mousemove!"
+                        }
                     },
                     {
                         "name": "brush",
@@ -563,16 +566,10 @@
                         }
                     }
                 ],
-                "resolve": {
-                    "scale": {
-                        "x": "independent",
-                        "y": "independent"
-                    }
-                },
                 "width": 700,
                 "height": 400,
                 "title": {
-                    "text": ["Air Pollution vs COPD Prevalence by County", "🔍 Zoom: Mouse wheel | 🖱️ Pan: Click+drag | 📦 Select: Drag box | 🔄 Reset: Double-click"],
+                    "text": ["Air Pollution vs COPD Prevalence by County", "Zoom: Mouse wheel | Pan: Click+drag | Select: Drag box | Reset: Double-click"],
                     "fontSize": 16,
                     "fontWeight": "bold",
                     "subtitleFontSize": 12,
@@ -580,45 +577,10 @@
                 }
             };
 
-            // Enhanced configuration for zoom and pan
-            const config = {
-                "view": {
-                    "continuousWidth": 700,
-                    "continuousHeight": 400
-                },
-                "interaction": {
-                    "zoom": true,
-                    "pan": true
-                }
-            };
-
-            vegaEmbed('#scatter-plot-viz', scatterSpec, {
-                actions: false,
-                config: config,
-                patch: function(spec) {
-                    // Add zoom and pan interactions
-                    spec.params = spec.params || [];
-                    
-                    // Add zoom parameter
-                    spec.params.push({
-                        "name": "zoom",
-                        "bind": {
-                            "scales": true
-                        },
-                        "select": {
-                            "type": "interval",
-                            "bind": "scales",
-                            "zoom": "wheel",
-                            "translate": "[mousedown, window:mouseup] > window:mousemove!"
-                        }
-                    });
-
-                    return spec;
-                }
-            }).then(function(result) {
+            vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false}).then(function(result) {
                 // Add double-click to reset zoom
                 result.view.addEventListener('dblclick', function() {
-                    result.view.signal('zoom_x', null).signal('zoom_y', null).run();
+                    result.view.signal('zoom', null).run();
                 });
             });
         }
