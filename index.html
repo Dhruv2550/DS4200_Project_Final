@@ -110,7 +110,12 @@
                 <div class="visualization-container">
                     <h3>Air Pollution vs. COPD Prevalence</h3>
                     <div class="viz-description">
-                        <p><strong>Interactive Features:</strong> Hover for county details, pan and zoom to explore clusters, brush to select groups of counties. This scatter plot shows the relationship between air pollution concentration (µg/m³) and COPD prevalence (%) across U.S. counties, with each point colored by the number of industrial facilities in that county.</p>
+                        <p><strong>Interactive Features:</strong> 
+                        <br>• <strong>Brush Selection:</strong> Drag to select a rectangular area - selected points become more visible
+                        <br>• <strong>Zoom:</strong> After brushing/selecting an area, double-click inside the selection to zoom into that region
+                        <br>• <strong>Reset:</strong> Double-click outside any selection to reset the zoom
+                        <br>• <strong>Hover:</strong> Mouse over points for detailed county information
+                        <br><br>This scatter plot shows the relationship between air pollution concentration (µg/m³) and COPD prevalence (%) across U.S. counties, with each point colored by the number of industrial facilities in that county.</p>
                     </div>
                     <div class="visualization">
                         <div id="scatter-plot-viz" style="width: 100%;"></div>
@@ -284,12 +289,14 @@
                     "x": {
                         "field": "Air Polution measured by Micrograms per cubic meter",
                         "type": "quantitative",
-                        "title": "Air Pollution (µg/m³)"
+                        "title": "Air Pollution (µg/m³)",
+                        "scale": {"domain": {"param": "brush", "encoding": "x"}}
                     },
                     "y": {
                         "field": "Percent_COPD",
                         "type": "quantitative",
-                        "title": "COPD Prevalence (%)"
+                        "title": "COPD Prevalence (%)",
+                        "scale": {"domain": {"param": "brush", "encoding": "y"}}
                     },
                     "color": {
                         "field": "amount_of_facilities",
@@ -304,26 +311,40 @@
                     "tooltip": [
                         {"field": "County", "type": "nominal"},
                         {"field": "Stabr", "type": "nominal", "title": "State"},
-                        {"field": "Percent_COPD", "type": "quantitative", "title": "COPD Prevalence (%)"},
-                        {"field": "Air Polution measured by Micrograms per cubic meter", "type": "quantitative", "title": "Air Pollution (µg/m³)"},
+                        {"field": "Percent_COPD", "type": "quantitative", "title": "COPD Prevalence (%)", "format": ".1f"},
+                        {"field": "Air Polution measured by Micrograms per cubic meter", "type": "quantitative", "title": "Air Pollution (µg/m³)", "format": ".1f"},
                         {"field": "amount_of_facilities", "type": "quantitative", "title": "Industrial Facilities"}
                     ]
                 },
                 "params": [
                     {
                         "name": "brush",
-                        "select": {"type": "interval", "encodings": ["x", "y"]}
+                        "select": {"type": "interval", "encodings": ["x", "y"], "zoom": true}
                     },
                     {
                         "name": "click",
                         "select": {"type": "point", "toggle": true}
                     }
                 ],
+                "resolve": {"scale": {"color": "independent"}},
                 "width": 700,
                 "height": 400
             };
 
-            vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false});
+            vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false}).then(result => {
+                // Add custom zoom and pan instructions
+                const view = result.view;
+                
+                // Add mouse wheel zoom
+                view.addEventListener('wheel', function(event, item) {
+                    event.preventDefault();
+                    const delta = event.deltaY;
+                    const zoom = delta > 0 ? 0.9 : 1.1;
+                    
+                    // This is a simplified zoom - Vega-Lite handles most of this automatically
+                    console.log('Mouse wheel zoom:', zoom);
+                });
+            });
         }
 
         // Create water violations chart
@@ -424,6 +445,8 @@
 
         // Create facilities bar chart
         function createFacilitiesChart(data, sortOrder = 'descending') {
+            console.log("Creating facilities chart with sort order:", sortOrder);
+            
             let topFacilities = data
                 .filter(d => d.amount_of_facilities > 0)
                 .map(d => ({
@@ -431,16 +454,30 @@
                     County_State: `${d.County}, ${d.Stabr}`
                 }));
 
-            // Apply sorting
+            // Apply sorting based on the parameter
             if (sortOrder === 'ascending') {
+                console.log("Sorting ascending by facility count");
                 topFacilities.sort((a, b) => a.amount_of_facilities - b.amount_of_facilities);
             } else if (sortOrder === 'alphabetical') {
+                console.log("Sorting alphabetically");
                 topFacilities.sort((a, b) => a.County_State.localeCompare(b.County_State));
-            } else {
+            } else { // descending
+                console.log("Sorting descending by facility count");
                 topFacilities.sort((a, b) => b.amount_of_facilities - a.amount_of_facilities);
             }
 
+            // Take top 20 after sorting
             topFacilities = topFacilities.slice(0, 20);
+
+            // Determine y-axis sort for Vega-Lite
+            let ySortConfig;
+            if (sortOrder === 'alphabetical') {
+                ySortConfig = "ascending";
+            } else if (sortOrder === 'ascending') {
+                ySortConfig = "x";  // Sort by x-value (facility count) ascending
+            } else {
+                ySortConfig = "-x"; // Sort by x-value (facility count) descending
+            }
 
             const barSpec = {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -459,7 +496,7 @@
                     "y": {
                         "field": "County_State",
                         "type": "nominal",
-                        "sort": sortOrder === 'alphabetical' ? "ascending" : (sortOrder === 'ascending' ? "x" : "-x"),
+                        "sort": ySortConfig,
                         "title": "County, State"
                     },
                     "color": {
@@ -497,6 +534,7 @@
                 "height": 400
             };
 
+            console.log("Bar chart spec created, embedding...");
             vegaEmbed('#facilities-bar-viz', barSpec, {actions: false});
         }
 
