@@ -297,6 +297,10 @@
                         "scale": {"scheme": "viridis"},
                         "title": "Facility Count"
                     },
+                    "opacity": {
+                        "condition": {"param": "brush", "value": 0.8},
+                        "value": 0.3
+                    },
                     "tooltip": [
                         {"field": "County", "type": "nominal"},
                         {"field": "Stabr", "type": "nominal", "title": "State"},
@@ -305,10 +309,16 @@
                         {"field": "amount_of_facilities", "type": "quantitative", "title": "Industrial Facilities"}
                     ]
                 },
-                "selection": {
-                    "brush": {"type": "interval", "encodings": ["x", "y"]},
-                    "click": {"type": "multi"}
-                },
+                "params": [
+                    {
+                        "name": "brush",
+                        "select": {"type": "interval", "encodings": ["x", "y"]}
+                    },
+                    {
+                        "name": "click",
+                        "select": {"type": "point", "toggle": true}
+                    }
+                ],
                 "width": 700,
                 "height": 400
             };
@@ -366,7 +376,8 @@
                 "mark": {
                     "type": "bar",
                     "color": "#3b0764",
-                    "cornerRadius": 4
+                    "cornerRadius": 4,
+                    "cursor": "pointer"
                 },
                 "encoding": {
                     "x": {
@@ -381,14 +392,29 @@
                         "type": "quantitative",
                         "title": "Number of Counties with Water Violations"
                     },
+                    "opacity": {
+                        "condition": {"param": "click", "value": 0.9},
+                        "value": 0.7
+                    },
+                    "stroke": {
+                        "condition": {"param": "click", "value": "black"},
+                        "value": null
+                    },
+                    "strokeWidth": {
+                        "condition": {"param": "click", "value": 2},
+                        "value": 0
+                    },
                     "tooltip": [
                         {"field": "majority_group", "type": "nominal", "title": "Majority Group"},
                         {"field": "counties_with_violations", "type": "quantitative", "title": "Counties with Violations"}
                     ]
                 },
-                "selection": {
-                    "click": {"type": "multi"}
-                },
+                "params": [
+                    {
+                        "name": "click",
+                        "select": {"type": "point", "toggle": true}
+                    }
+                ],
                 "width": 650,
                 "height": 400
             };
@@ -397,21 +423,32 @@
         }
 
         // Create facilities bar chart
-        function createFacilitiesChart(data) {
-            const topFacilities = data
-                .sort((a, b) => b.amount_of_facilities - a.amount_of_facilities)
-                .slice(0, 20)
+        function createFacilitiesChart(data, sortOrder = 'descending') {
+            let topFacilities = data
+                .filter(d => d.amount_of_facilities > 0)
                 .map(d => ({
                     ...d,
                     County_State: `${d.County}, ${d.Stabr}`
                 }));
+
+            // Apply sorting
+            if (sortOrder === 'ascending') {
+                topFacilities.sort((a, b) => a.amount_of_facilities - b.amount_of_facilities);
+            } else if (sortOrder === 'alphabetical') {
+                topFacilities.sort((a, b) => a.County_State.localeCompare(b.County_State));
+            } else {
+                topFacilities.sort((a, b) => b.amount_of_facilities - a.amount_of_facilities);
+            }
+
+            topFacilities = topFacilities.slice(0, 20);
 
             const barSpec = {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
                 "data": {"values": topFacilities},
                 "mark": {
                     "type": "bar",
-                    "cornerRadius": 4
+                    "cornerRadius": 4,
+                    "cursor": "pointer"
                 },
                 "encoding": {
                     "x": {
@@ -422,7 +459,7 @@
                     "y": {
                         "field": "County_State",
                         "type": "nominal",
-                        "sort": "-x",
+                        "sort": sortOrder === 'alphabetical' ? "ascending" : (sortOrder === 'ascending' ? "x" : "-x"),
                         "title": "County, State"
                     },
                     "color": {
@@ -431,14 +468,31 @@
                         "scale": {"range": ["#2e1065", "#ede9fe"]},
                         "title": "Facility Count"
                     },
+                    "opacity": {
+                        "condition": {"param": "click", "value": 1.0},
+                        "value": 0.8
+                    },
+                    "stroke": {
+                        "condition": {"param": "click", "value": "black"},
+                        "value": null
+                    },
+                    "strokeWidth": {
+                        "condition": {"param": "click", "value": 2},
+                        "value": 0
+                    },
                     "tooltip": [
-                        {"field": "County_State", "type": "nominal"},
-                        {"field": "amount_of_facilities", "type": "quantitative", "title": "Industrial Facilities"}
+                        {"field": "County_State", "type": "nominal", "title": "County, State"},
+                        {"field": "amount_of_facilities", "type": "quantitative", "title": "Industrial Facilities"},
+                        {"field": "Percent_COPD", "type": "quantitative", "title": "COPD Rate (%)", "format": ".1f"},
+                        {"field": "Air Polution measured by Micrograms per cubic meter", "type": "quantitative", "title": "Air Pollution (µg/m³)", "format": ".1f"}
                     ]
                 },
-                "selection": {
-                    "click": {"type": "multi"}
-                },
+                "params": [
+                    {
+                        "name": "click",
+                        "select": {"type": "point", "toggle": true}
+                    }
+                ],
                 "width": 700,
                 "height": 400
             };
