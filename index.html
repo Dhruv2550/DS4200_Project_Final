@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <style>
-        /* D3 specific styles */
         .d3-bar { 
             fill: #2e1065; 
             cursor: pointer;
@@ -61,7 +60,6 @@
     </header>
 
     <main>
-        <!-- Introduction Section -->
         <section id="introduction" class="section">
             <div class="container">
                 <h2>Introduction</h2>
@@ -83,7 +81,6 @@
             </div>
         </section>
 
-        <!-- Data Section -->
         <section id="data" class="section">
             <div class="container">
                 <h2>Data Sources and Methodology</h2>
@@ -123,13 +120,11 @@
             </div>
         </section>
 
-        <!-- Visualizations Section -->
         <section id="visualizations" class="section">
             <div class="container">
                 <h2>Interactive Data Visualizations</h2>
                 <p>Explore the relationship between environmental factors, demographics, and health outcomes through our interactive visualizations.</p>
 
-                <!-- Interactive Air Pollution vs COPD Scatter Plot (Altair) -->
                 <div class="visualization-container">
                     <h3>Air Pollution vs. COPD Prevalence (Interactive Altair)</h3>
                     <div class="viz-description">
@@ -148,7 +143,6 @@
                     </div>
                 </div>
 
-                <!-- D3 Top Counties Bar Chart -->
                 <div class="visualization-container">
                     <h3>Top 20 Counties by Industrial Facilities (Interactive D3)</h3>
                     <div class="viz-description">
@@ -165,7 +159,6 @@
                     </div>
                 </div>
 
-                <!-- Interactive Water Violations Bar Chart (Altair) -->
                 <div class="visualization-container">
                     <h3>Water Quality Violations by Demographics (Interactive Altair)</h3>
                     <div class="viz-description">
@@ -181,7 +174,6 @@
                     </div>
                 </div>
 
-<!-- Air Pollution Choropleth Map -->
                 <div class="visualization-container">
                     <h3>County-Level Air Pollution Distribution</h3>
                     <div class="viz-description">
@@ -197,7 +189,6 @@
                     </div>
                 </div>
 
-                <!-- Cancer Incidence Choropleth Map -->
                 <div class="visualization-container">
                     <h3>County-Level Cancer Incidence Distribution</h3>
                     <div class="viz-description">
@@ -213,7 +204,6 @@
                     </div>
                 </div>
 
-                <!-- COPD Prevalence Choropleth Map -->
                 <div class="visualization-container">
                     <h3>County-Level COPD Prevalence Distribution</h3>
                     <div class="viz-description">
@@ -229,12 +219,11 @@
                     </div>
                 </div>
 
-                <!-- Poverty Rate Choropleth Map -->
                 <div class="visualization-container">
                     <h3>County-Level Poverty Rate Distribution</h3>
                     <div class="viz-description">
                         <p>This choropleth map visualizes normalized poverty rates across U.S. counties using a red color scale, providing crucial socioeconomic context for understanding environmental health disparities and their intersection with economic disadvantage.</p>
-                        <p><strong>Design Rationale:</strong> Red color scale effectively communicates the intensity of economic disadvantage (darker red = higher poverty). The normalization process ensures that relative poverty levels are comparable across all counties regardless of their baseline economic conditions.</p>
+                        <p><strong>Design Rationale:</strong> Red color scheme effectively communicates the intensity of economic disadvantage (darker red = higher poverty). The normalization process ensures that relative poverty levels are comparable across all counties regardless of their baseline economic conditions.</p>
                     </div>
                     <div class="visualization">
                         <img src="images/poverty_rate_map.png" alt="County-Level Poverty Rate Distribution Map" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
@@ -244,9 +233,9 @@
                         <p>Poverty rates show clear geographic clustering, with higher concentrations in rural areas of the South, parts of Appalachia, Native American reservations, and specific metropolitan areas. This economic geography provides essential context for understanding how socioeconomic disadvantage may compound environmental health risks in vulnerable communities.</p>
                     </div>
                 </div>
+            </div>
         </section>
 
-        <!-- Findings Section -->
         <section id="findings" class="section">
             <div class="container">
                 <h2>Summary of Findings</h2>
@@ -279,7 +268,6 @@
             </div>
         </section>
 
-        <!-- Team Section -->
         <section id="team" class="section">
             <div class="container">
                 <h2>Project Team</h2>
@@ -308,22 +296,18 @@
     </footer>
 
     <script>
-        // Global data variable
         let globalData = [];
 
-        // Load data function
         async function loadData() {
             try {
                 const data = await d3.csv('data/final_output.csv');
                 
-                // Convert string numbers to actual numbers
                 data.forEach(d => {
                     d["Air Polution measured by Micrograms per cubic meter"] = +d["Air Polution measured by Micrograms per cubic meter"];
                     d["Percent_COPD"] = +d["Percent_COPD"];
                     d["amount_of_facilities"] = +d["amount_of_facilities"];
                     d["PCTPOVALL_2023"] = +d["PCTPOVALL_2023"];
                     
-                    // Convert ethnicity columns to numbers
                     d["Ethnicities.American Indian and Alaska Native Alone"] = +d["Ethnicities.American Indian and Alaska Native Alone"];
                     d["Ethnicities.Asian Alone"] = +d["Ethnicities.Asian Alone"];
                     d["Ethnicities.Black Alone"] = +d["Ethnicities.Black Alone"];
@@ -344,12 +328,9 @@
             }
         }
 
-        // Create D3 bar chart for top facilities
         function createD3FacilitiesChart(data) {
-            // Clear previous chart
             d3.select("#d3-facilities-bar-chart").selectAll("*").remove();
             
-            // Process data to get top 20 counties
             const facilitiesData = data
                 .filter(d => d.amount_of_facilities && d.amount_of_facilities > 0 && d.County && d.Stabr)
                 .map(d => ({
@@ -361,12 +342,10 @@
                 .sort((a, b) => b.amount_of_facilities - a.amount_of_facilities)
                 .slice(0, 20);
 
-            // Set dimensions and margins
             const margin = {top: 20, right: 30, bottom: 60, left: 200};
             const width = 700 - margin.left - margin.right;
             const height = 500 - margin.top - margin.bottom;
 
-            // Create SVG
             const svg = d3.select("#d3-facilities-bar-chart")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -375,7 +354,6 @@
             const g = svg.append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
-            // Create scales
             const xScale = d3.scaleLinear()
                 .domain([0, d3.max(facilitiesData, d => d.amount_of_facilities)])
                 .range([0, width]);
@@ -385,14 +363,11 @@
                 .range([0, height])
                 .padding(0.1);
 
-            // Color scale
             const colorScale = d3.scaleSequential(d3.interpolateViridis)
                 .domain([0, d3.max(facilitiesData, d => d.amount_of_facilities)]);
 
-            // Create tooltip
             const tooltip = d3.select(".d3-tooltip");
 
-            // Create bars
             g.selectAll(".d3-bar")
                 .data(facilitiesData)
                 .enter()
@@ -420,7 +395,6 @@
                     tooltip.transition().duration(500).style("opacity", 0);
                 })
                 .on("click", function(event, d) {
-                    // Toggle selection
                     const isSelected = d3.select(this).classed("selected");
                     g.selectAll(".d3-bar").classed("selected", false).style("opacity", 1);
                     if (!isSelected) {
@@ -429,7 +403,6 @@
                     }
                 });
 
-            // Add axes
             g.append("g")
                 .attr("class", "d3-axis")
                 .attr("transform", `translate(0,${height})`)
@@ -439,7 +412,6 @@
                 .attr("class", "d3-axis")
                 .call(d3.axisLeft(yScale));
 
-            // Add axis labels
             g.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 0 - margin.left)
@@ -455,7 +427,6 @@
                 .style("font-weight", "bold")
                 .text("Number of Industrial Facilities");
 
-            // Add title
             g.append("text")
                 .attr("x", width / 2)
                 .attr("y", 0 - (margin.top / 2))
@@ -465,7 +436,6 @@
                 .text("Top 20 Counties by Industrial Facility Count");
         }
 
-        // Create enhanced Altair scatter plot with better brush selection
         function createScatterPlot(data) {
             const scatterSpec = {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -584,9 +554,7 @@
             vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false});
         }
 
-        // Create water violations chart
         function createWaterViolationsChart(data) {
-            // Calculate majority group for each county
             const dataWithMajority = data.map(d => {
                 const ethnicityColumns = {
                     'Ethnicities.White Alone': 'White',
@@ -613,7 +581,6 @@
                 return { ...d, majority_group: majorityGroup };
             });
 
-            // Process data for water violations
             const violationsData = dataWithMajority
                 .filter(d => d["Water Violation"] && d["Water Violation"].toString().toLowerCase() === "yes")
                 .reduce((acc, d) => {
@@ -680,87 +647,6 @@
             vegaEmbed('#water-violations-viz', waterSpec, {actions: false});
         }
 
-        // Create Altair facilities bar chart
-        function createFacilitiesChart(data, sortOrder = 'descending') {
-            let topFacilities = data
-                .filter(d => d.amount_of_facilities && d.amount_of_facilities > 0 && d.County && d.Stabr)
-                .map(d => ({
-                    County_State: `${d.County}, ${d.Stabr}`,
-                    amount_of_facilities: +d.amount_of_facilities,
-                    Percent_COPD: +d.Percent_COPD || 0,
-                    Air_Pollution: +d["Air Polution measured by Micrograms per cubic meter"] || 0
-                }));
-
-            // Apply sorting
-            if (sortOrder === 'ascending') {
-                topFacilities.sort((a, b) => a.amount_of_facilities - b.amount_of_facilities);
-            } else if (sortOrder === 'alphabetical') {
-                topFacilities.sort((a, b) => a.County_State.localeCompare(b.County_State));
-            } else {
-                topFacilities.sort((a, b) => b.amount_of_facilities - a.amount_of_facilities);
-            }
-
-            topFacilities = topFacilities.slice(0, 20);
-
-            const barSpec = {
-                "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-                "data": {"values": topFacilities},
-                "mark": {
-                    "type": "bar",
-                    "cornerRadius": 4,
-                    "cursor": "pointer"
-                },
-                "encoding": {
-                    "x": {
-                        "field": "amount_of_facilities",
-                        "type": "quantitative",
-                        "title": "Number of Facilities"
-                    },
-                    "y": {
-                        "field": "County_State",
-                        "type": "nominal",
-                        "title": "County, State",
-                        "sort": null
-                    },
-                    "color": {
-                        "field": "amount_of_facilities",
-                        "type": "quantitative",
-                        "scale": {"range": ["#2e1065", "#ede9fe"]},
-                        "title": "Facility Count"
-                    },
-                    "opacity": {
-                        "condition": {"param": "click", "value": 1.0},
-                        "value": 0.8
-                    },
-                    "stroke": {
-                        "condition": {"param": "click", "value": "black"},
-                        "value": null
-                    },
-                    "strokeWidth": {
-                        "condition": {"param": "click", "value": 2},
-                        "value": 0
-                    },
-                    "tooltip": [
-                        {"field": "County_State", "type": "nominal", "title": "County, State"},
-                        {"field": "amount_of_facilities", "type": "quantitative", "title": "Industrial Facilities"},
-                        {"field": "Percent_COPD", "type": "quantitative", "title": "COPD Rate (%)", "format": ".1f"},
-                        {"field": "Air_Pollution", "type": "quantitative", "title": "Air Pollution (µg/m³)", "format": ".1f"}
-                    ]
-                },
-                "params": [
-                    {
-                        "name": "click",
-                        "select": {"type": "point", "toggle": true}
-                    }
-                ],
-                "width": 700,
-                "height": 400
-            };
-
-            vegaEmbed('#facilities-bar-viz', barSpec, {actions: false});
-        }
-
-        // Initialize all visualizations
         loadData().then(data => {
             if (data.length === 0) {
                 console.error("No data loaded! Check if final_output.csv exists and is accessible.");
@@ -774,7 +660,6 @@
         }).catch(error => {
             console.error("Error initializing visualizations:", error);
         });
-
     </script>
 </body>
 </html>
