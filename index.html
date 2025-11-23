@@ -448,9 +448,36 @@
 
         // Initialize visualizations
         loadData().then(data => {
+            console.log("Initializing visualizations with data:", data.length, "rows");
+            
+            if (data.length === 0) {
+                console.error("No data loaded! Check if final_output.csv exists and is accessible.");
+                return;
+            }
+            
+            console.log("Sample data point:", data[0]);
+            console.log("Available columns:", Object.keys(data[0]));
+            
+            // Check for required columns
+            const requiredColumns = [
+                "Air Polution measured by Micrograms per cubic meter",
+                "Percent_COPD", 
+                "amount_of_facilities",
+                "County",
+                "Stabr",
+                "Water Violation"
+            ];
+            
+            const missingColumns = requiredColumns.filter(col => !(col in data[0]));
+            if (missingColumns.length > 0) {
+                console.error("Missing required columns:", missingColumns);
+            }
+            
             createScatterPlot(data);
             createWaterViolationsChart(data);
             createFacilitiesChart(data);
+        }).catch(error => {
+            console.error("Error initializing visualizations:", error);
         });
 
         // Add sort control functionality
