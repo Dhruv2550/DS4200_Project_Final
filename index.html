@@ -192,36 +192,69 @@
                     </div>
                 </div>
 
-                <!-- Quadrant Choropleth Maps -->
+<!-- Air Pollution Choropleth Map -->
                 <div class="visualization-container">
-                    <h3>County-Level Environmental and Health Indicators</h3>
+                    <h3>County-Level Air Pollution Distribution</h3>
                     <div class="viz-description">
-                        <p>This comprehensive view displays multiple environmental and health indicators across U.S. counties, including industrial facility counts and COPD prevalence rates, enabling comparison of environmental burden and health outcomes.</p>
+                        <p>This choropleth map displays normalized air pollution levels (PM2.5 in µg/m³) across U.S. counties using a blue color scale. Darker blue indicates higher pollution concentrations, revealing geographic patterns of air quality across the nation.</p>
+                        <p><strong>Design Rationale:</strong> Implemented using Plotly with a blue color scale to intuitively represent air quality (darker = worse air). Data was normalized across counties to highlight relative differences in pollution exposure levels.</p>
                     </div>
                     <div class="visualization">
-                        <img src="images/quadrant_maps.png" alt="Quadrant Choropleth Maps showing Environmental and Health Indicators" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
+                        <img src="images/air_pollution_map.png" alt="County-Level Air Pollution Distribution Map" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
                     </div>
                     <div class="viz-takeaway">
                         <h4>Key Takeaway:</h4>
-                        <p>The quadrant maps reveal complex spatial patterns where cancer incidence (top left) shows notable concentrations in certain regions, while COPD prevalence (top right) displays different geographic clustering. The relationship between these health outcomes and environmental factors appears regionally variable, suggesting multiple contributing factors beyond simple pollution exposure.</p>
+                        <p>Air pollution shows distinct geographic clustering, with elevated concentrations in major metropolitan areas and industrial regions, particularly in California's Central Valley and parts of the Midwest and Southeast, highlighting areas where air quality regulations and monitoring may need increased attention.</p>
                     </div>
                 </div>
 
-                <!-- Income/Poverty Choropleth Map -->
+                <!-- Cancer Incidence Choropleth Map -->
                 <div class="visualization-container">
-                    <h3>County-Level Socioeconomic Distribution</h3>
+                    <h3>County-Level Cancer Incidence Distribution</h3>
                     <div class="viz-description">
-                        <p>This choropleth map visualizes socioeconomic indicators across U.S. counties, providing context for understanding how economic factors intersect with environmental health disparities.</p>
+                        <p>This choropleth map shows the log-scaled average annual cancer count across U.S. counties using a purple color scale. The logarithmic transformation helps visualize the wide range of cancer incidence rates while highlighting geographic patterns.</p>
+                        <p><strong>Design Rationale:</strong> Used log transformation to handle the wide range in cancer counts (from low rural counties to high urban areas). Purple color scheme maintains visual consistency with the overall design while clearly distinguishing this health outcome variable.</p>
                     </div>
                     <div class="visualization">
-                        <img src="images/income_map.png" alt="County-Level Income Distribution Map" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
+                        <img src="images/cancer_incidence_map.png" alt="County-Level Cancer Incidence Distribution Map" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
                     </div>
                     <div class="viz-takeaway">
                         <h4>Key Takeaway:</h4>
-                        <p>The income distribution map shows clear socioeconomic disparities across the United States, with lower-income areas (shown in darker purple) concentrated in rural regions, parts of the South, and specific metropolitan areas. This economic geography provides important context for understanding environmental health disparities.</p>
+                        <p>Cancer incidence shows strong correlation with population density, with highest rates concentrated in major metropolitan areas. However, certain rural regions also show elevated rates, suggesting that factors beyond just population size may contribute to cancer burden in specific geographic areas.</p>
                     </div>
                 </div>
-            </div>
+
+                <!-- COPD Prevalence Choropleth Map -->
+                <div class="visualization-container">
+                    <h3>County-Level COPD Prevalence Distribution</h3>
+                    <div class="viz-description">
+                        <p>This choropleth map displays normalized COPD prevalence rates across U.S. counties using a green color scale. The map reveals regional patterns in respiratory health outcomes and their potential relationship to environmental and socioeconomic factors.</p>
+                        <p><strong>Design Rationale:</strong> Green color scale was chosen to represent health outcomes (darker green = higher COPD rates). Data normalization allows for direct comparison across counties with different baseline health profiles.</p>
+                    </div>
+                    <div class="visualization">
+                        <img src="images/copd_prevalence_map.png" alt="County-Level COPD Prevalence Distribution Map" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
+                    </div>
+                    <div class="viz-takeaway">
+                        <h4>Key Takeaway:</h4>
+                        <p>COPD prevalence shows distinct regional clustering, with notably higher rates in parts of Appalachia, the Southeast, and certain areas along the Arizona-New Mexico border. This geographic pattern suggests that environmental, economic, and lifestyle factors may combine to create respiratory health disparities in specific regions.</p>
+                    </div>
+                </div>
+
+                <!-- Poverty Rate Choropleth Map -->
+                <div class="visualization-container">
+                    <h3>County-Level Poverty Rate Distribution</h3>
+                    <div class="viz-description">
+                        <p>This choropleth map visualizes normalized poverty rates across U.S. counties using a red color scale, providing crucial socioeconomic context for understanding environmental health disparities and their intersection with economic disadvantage.</p>
+                        <p><strong>Design Rationale:</strong> Red color scale effectively communicates the intensity of economic disadvantage (darker red = higher poverty). The normalization process ensures that relative poverty levels are comparable across all counties regardless of their baseline economic conditions.</p>
+                    </div>
+                    <div class="visualization">
+                        <img src="images/poverty_rate_map.png" alt="County-Level Poverty Rate Distribution Map" style="width: 100%; max-width: 900px; height: auto; border-radius: 8px;">
+                    </div>
+                    <div class="viz-takeaway">
+                        <h4>Key Takeaway:</h4>
+                        <p>Poverty rates show clear geographic clustering, with higher concentrations in rural areas of the South, parts of Appalachia, Native American reservations, and specific metropolitan areas. This economic geography provides essential context for understanding how socioeconomic disadvantage may compound environmental health risks in vulnerable communities.</p>
+                    </div>
+                </div>
         </section>
 
         <!-- Findings Section -->
