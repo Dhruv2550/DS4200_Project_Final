@@ -241,38 +241,12 @@
     </footer>
 
     <script>
-        // Load your data - replace with actual data loading
+
         async function loadData() {
             try {
-                // For now, using sample data - replace with: 
-                // const data = await d3.csv('final_output.csv');
-                
-                // Sample data structure based on your dataset
-                const sampleData = [
-                    {
-                        "County": "Harris",
-                        "State": "TX", 
-                        "Stabr": "TX",
-                        "Air Polution measured by Micrograms per cubic meter": 9.2,
-                        "Percent_COPD": 5.8,
-                        "amount_of_facilities": 458,
-                        "majority_group": "Hispanic or Latino",
-                        "Water Violation": "Yes"
-                    },
-                    {
-                        "County": "Los Angeles",
-                        "State": "CA",
-                        "Stabr": "CA", 
-                        "Air Polution measured by Micrograms per cubic meter": 12.1,
-                        "Percent_COPD": 4.2,
-                        "amount_of_facilities": 298,
-                        "majority_group": "Hispanic or Latino",
-                        "Water Violation": "No"
-                    }
-                    // Add more sample data points as needed
-                ];
-                
-                return sampleData;
+                const data = await d3.csv('final_output.csv');
+                return data;
+
             } catch (error) {
                 console.error('Error loading data:', error);
                 return [];
