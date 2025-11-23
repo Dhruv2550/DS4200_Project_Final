@@ -241,12 +241,33 @@
     </footer>
 
     <script>
-
+        // Load your data - replace with actual data loading
         async function loadData() {
             try {
                 const data = await d3.csv('final_output.csv');
+                
+                // Convert string numbers to actual numbers for calculations
+                data.forEach(d => {
+                    d["Air Polution measured by Micrograms per cubic meter"] = +d["Air Polution measured by Micrograms per cubic meter"];
+                    d["Percent_COPD"] = +d["Percent_COPD"];
+                    d["amount_of_facilities"] = +d["amount_of_facilities"];
+                    d["PCTPOVALL_2023"] = +d["PCTPOVALL_2023"];
+                    
+                    // Convert ethnicity columns to numbers
+                    d["Ethnicities.American Indian and Alaska Native Alone"] = +d["Ethnicities.American Indian and Alaska Native Alone"];
+                    d["Ethnicities.Asian Alone"] = +d["Ethnicities.Asian Alone"];
+                    d["Ethnicities.Black Alone"] = +d["Ethnicities.Black Alone"];
+                    d["Ethnicities.Hispanic or Latino"] = +d["Ethnicities.Hispanic or Latino"];
+                    d["Ethnicities.Native Hawaiian and Other Pacific Islander Alone"] = +d["Ethnicities.Native Hawaiian and Other Pacific Islander Alone"];
+                    d["Ethnicities.Two or More Races"] = +d["Ethnicities.Two or More Races"];
+                    d["Ethnicities.White Alone"] = +d["Ethnicities.White Alone"];
+                    d["Ethnicities.White Alone\t not Hispanic or Latino"] = +d["Ethnicities.White Alone\t not Hispanic or Latino"];
+                });
+                
+                console.log("Data loaded:", data.length, "rows");
+                console.log("Sample row:", data[0]);
                 return data;
-
+                
             } catch (error) {
                 console.error('Error loading data:', error);
                 return [];
@@ -297,9 +318,36 @@
 
         // Create water violations chart
         function createWaterViolationsChart(data) {
+            // First, calculate majority group for each county
+            const dataWithMajority = data.map(d => {
+                const ethnicityColumns = {
+                    'Ethnicities.White Alone': 'White',
+                    'Ethnicities.Black Alone': 'Black',
+                    'Ethnicities.Hispanic or Latino': 'Hispanic or Latino',
+                    'Ethnicities.Asian Alone': 'Asian',
+                    'Ethnicities.American Indian and Alaska Native Alone': 'American Indian / Alaska Native',
+                    'Ethnicities.Native Hawaiian and Other Pacific Islander Alone': 'NHPI',
+                    'Ethnicities.Two or More Races': 'Two or More Races',
+                    'Ethnicities.White Alone\t not Hispanic or Latino': 'White (Non-Hispanic)'
+                };
+
+                let maxValue = 0;
+                let majorityGroup = 'Unknown';
+                
+                Object.entries(ethnicityColumns).forEach(([col, label]) => {
+                    const value = parseFloat(d[col]) || 0;
+                    if (value > maxValue) {
+                        maxValue = value;
+                        majorityGroup = label;
+                    }
+                });
+
+                return { ...d, majority_group: majorityGroup };
+            });
+
             // Process data for water violations by demographic group
-            const violationsData = data
-                .filter(d => d["Water Violation"] === "Yes")
+            const violationsData = dataWithMajority
+                .filter(d => d["Water Violation"] && d["Water Violation"].toString().toLowerCase() === "yes")
                 .reduce((acc, d) => {
                     acc[d.majority_group] = (acc[d.majority_group] || 0) + 1;
                     return acc;
