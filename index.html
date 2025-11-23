@@ -72,7 +72,6 @@
                     
                     <p>Studying these connections not only reveals the human cost of industrial and governmental oversight but also emphasizes the urgent need for equitable public health protections and sustainable environmental practices.</p>
                 </div>
-                </div>
 
                 <div class="references">
                     <h3>References</h3>
@@ -149,12 +148,12 @@
                     </div>
                 </div>
 
-                <!-- D3.js Top Counties Bar Chart -->
+                <!-- D3 Top Counties Bar Chart -->
                 <div class="visualization-container">
-                    <h3>Top 20 Counties by Industrial Facilities (Interactive D3.js)</h3>
+                    <h3>Top 20 Counties by Industrial Facilities (Interactive D3)</h3>
                     <div class="viz-description">
-                        <p><strong>Interactive Features:</strong> Hover for detailed information, click bars to highlight. This bar chart uses D3.js to show the 20 U.S. counties with the highest number of industrial facilities, with interactive hover tooltips and click selection.</p>
-                        <p><strong>Design Rationale:</strong> Implemented in pure D3.js with custom color scaling using d3.interpolateViridis. Horizontal bar chart design allows for easy reading of county names. Interactive features include hover tooltips with comprehensive county information and click selection that highlights selected counties while dimming others.</p>
+                        <p><strong>Interactive Features:</strong> Hover for detailed information, click bars to highlight. This bar chart uses D3 to show the 20 U.S. counties with the highest number of industrial facilities, with interactive hover tooltips and click selection.</p>
+                        <p><strong>Design Rationale:</strong> Implemented in D3 with custom color scaling using d3.interpolateViridis. Horizontal bar chart design allows for easy reading of county names. Interactive features include hover tooltips with comprehensive county information and click selection that highlights selected counties while dimming others.</p>
                     </div>
                     <div class="d3-chart-container">
                         <div id="d3-facilities-bar-chart" style="width: 100%;"></div>
@@ -345,7 +344,7 @@
             }
         }
 
-        // Create D3.js bar chart for top facilities
+        // Create D3 bar chart for top facilities
         function createD3FacilitiesChart(data) {
             // Clear previous chart
             d3.select("#d3-facilities-bar-chart").selectAll("*").remove();
