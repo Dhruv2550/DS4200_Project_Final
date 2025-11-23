@@ -145,9 +145,11 @@
                     <h3>Air Pollution vs. COPD Prevalence (Interactive Altair)</h3>
                     <div class="viz-description">
                         <p><strong>Interactive Features:</strong> 
-                        <br>• <strong>Brush Selection:</strong> Drag to create a rectangular selection - highlighted points become more visible
+                        <br>• <strong>Brush Selection:</strong> Drag to create a rectangular selection - selected points become bright and prominent while unselected points fade to very low opacity
+                        <br>• <strong>Zoom & Pan:</strong> Use mouse wheel to zoom in/out and click+drag to pan around the plot when zoomed
                         <br>• <strong>Click Points:</strong> Click individual points to select them (they get larger with black outline)
                         <br>• <strong>Hover:</strong> Mouse over any point for detailed county information
+                        <br>• <strong>Reset:</strong> Double-click anywhere on the plot to reset zoom and selections
                         <br><br>This scatter plot shows the relationship between air pollution concentration (µg/m³) and COPD prevalence (%) across U.S. counties, with each point colored by the number of industrial facilities in that county.</p>
                     </div>
                     <div class="visualization">
@@ -446,22 +448,32 @@
                 .text("Top 20 Counties by Industrial Facility Count");
         }
 
-        // Create Altair scatter plot
+        // Create enhanced Altair scatter plot with zoom/pan and better brush selection
         function createScatterPlot(data) {
             const scatterSpec = {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
                 "data": {"values": data},
-                "mark": {"type": "circle", "size": 40, "opacity": 0.4},
+                "mark": {
+                    "type": "circle", 
+                    "size": 40, 
+                    "opacity": 0.7,
+                    "stroke": null,
+                    "strokeWidth": 0
+                },
                 "encoding": {
                     "x": {
                         "field": "Air Polution measured by Micrograms per cubic meter",
                         "type": "quantitative",
-                        "title": "Air Pollution (µg/m³)"
+                        "title": "Air Pollution (µg/m³)",
+                        "scale": {"domain": {"param": "zoom_x"}},
+                        "axis": {"grid": true}
                     },
                     "y": {
                         "field": "Percent_COPD",
                         "type": "quantitative",
-                        "title": "COPD Prevalence (%)"
+                        "title": "COPD Prevalence (%)",
+                        "scale": {"domain": {"param": "zoom_y"}},
+                        "axis": {"grid": true}
                     },
                     "color": {
                         "field": "amount_of_facilities",
@@ -471,29 +483,53 @@
                     },
                     "opacity": {
                         "condition": [
-                            {"param": "brush", "value": 0.9},
-                            {"param": "click", "value": 0.9}
+                            {
+                                "param": "brush",
+                                "value": 0.9
+                            },
+                            {
+                                "param": "click",
+                                "value": 1.0
+                            }
                         ],
-                        "value": 0.1
+                        "value": 0.05
                     },
                     "size": {
                         "condition": [
-                            {"param": "click", "value": 80},
-                            {"param": "brush", "value": 60}
+                            {
+                                "param": "click",
+                                "value": 100
+                            },
+                            {
+                                "param": "brush",
+                                "value": 80
+                            }
                         ],
-                        "value": 25
+                        "value": 30
                     },
                     "stroke": {
                         "condition": [
-                            {"param": "click", "value": "white"},
-                            {"param": "brush", "value": "#ffff00"}
+                            {
+                                "param": "click",
+                                "value": "white"
+                            },
+                            {
+                                "param": "brush",
+                                "value": "#ffff00"
+                            }
                         ],
                         "value": null
                     },
                     "strokeWidth": {
                         "condition": [
-                            {"param": "click", "value": 2},
-                            {"param": "brush", "value": 2}
+                            {
+                                "param": "click",
+                                "value": 3
+                            },
+                            {
+                                "param": "brush",
+                                "value": 2
+                            }
                         ],
                         "value": 0
                     },
@@ -507,24 +543,84 @@
                 },
                 "params": [
                     {
+                        "name": "zoom_x"
+                    },
+                    {
+                        "name": "zoom_y"
+                    },
+                    {
                         "name": "brush",
-                        "select": {"type": "interval"}
+                        "select": {
+                            "type": "interval",
+                            "resolve": "global"
+                        }
                     },
                     {
                         "name": "click",
-                        "select": {"type": "point", "toggle": true}
+                        "select": {
+                            "type": "point",
+                            "toggle": true
+                        }
                     }
                 ],
+                "resolve": {
+                    "scale": {
+                        "x": "independent",
+                        "y": "independent"
+                    }
+                },
                 "width": 700,
                 "height": 400,
                 "title": {
-                    "text": "Air Pollution vs COPD Prevalence by County",
+                    "text": ["Air Pollution vs COPD Prevalence by County", "🔍 Zoom: Mouse wheel | 🖱️ Pan: Click+drag | 📦 Select: Drag box | 🔄 Reset: Double-click"],
                     "fontSize": 16,
-                    "fontWeight": "bold"
+                    "fontWeight": "bold",
+                    "subtitleFontSize": 12,
+                    "subtitleColor": "gray"
                 }
             };
 
-            vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false});
+            // Enhanced configuration for zoom and pan
+            const config = {
+                "view": {
+                    "continuousWidth": 700,
+                    "continuousHeight": 400
+                },
+                "interaction": {
+                    "zoom": true,
+                    "pan": true
+                }
+            };
+
+            vegaEmbed('#scatter-plot-viz', scatterSpec, {
+                actions: false,
+                config: config,
+                patch: function(spec) {
+                    // Add zoom and pan interactions
+                    spec.params = spec.params || [];
+                    
+                    // Add zoom parameter
+                    spec.params.push({
+                        "name": "zoom",
+                        "bind": {
+                            "scales": true
+                        },
+                        "select": {
+                            "type": "interval",
+                            "bind": "scales",
+                            "zoom": "wheel",
+                            "translate": "[mousedown, window:mouseup] > window:mousemove!"
+                        }
+                    });
+
+                    return spec;
+                }
+            }).then(function(result) {
+                // Add double-click to reset zoom
+                result.view.addEventListener('dblclick', function() {
+                    result.view.signal('zoom_x', null).signal('zoom_y', null).run();
+                });
+            });
         }
 
         // Create water violations chart
