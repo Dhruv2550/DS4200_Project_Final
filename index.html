@@ -146,10 +146,8 @@
                     <div class="viz-description">
                         <p><strong>Interactive Features:</strong> 
                         <br>• <strong>Brush Selection:</strong> Drag to create a rectangular selection - selected points become bright and prominent while unselected points fade to very low opacity
-                        <br>• <strong>Zoom & Pan:</strong> Use mouse wheel to zoom in/out and click+drag to pan around the plot when zoomed
                         <br>• <strong>Click Points:</strong> Click individual points to select them (they get larger with black outline)
                         <br>• <strong>Hover:</strong> Mouse over any point for detailed county information
-                        <br>• <strong>Reset:</strong> Double-click anywhere on the plot to reset zoom and selections
                         <br><br>This scatter plot shows the relationship between air pollution concentration (µg/m³) and COPD prevalence (%) across U.S. counties, with each point colored by the number of industrial facilities in that county.</p>
                     </div>
                     <div class="visualization">
@@ -448,7 +446,7 @@
                 .text("Top 20 Counties by Industrial Facility Count");
         }
 
-        // Create enhanced Altair scatter plot with zoom/pan and better brush selection
+        // Create enhanced Altair scatter plot with better brush selection
         function createScatterPlot(data) {
             const scatterSpec = {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -465,14 +463,12 @@
                         "field": "Air Polution measured by Micrograms per cubic meter",
                         "type": "quantitative",
                         "title": "Air Pollution (µg/m³)",
-                        "scale": {"domain": {"param": "zoom"}},
                         "axis": {"grid": true}
                     },
                     "y": {
                         "field": "Percent_COPD",
                         "type": "quantitative",
                         "title": "COPD Prevalence (%)",
-                        "scale": {"domain": {"param": "zoom"}},
                         "axis": {"grid": true}
                     },
                     "color": {
@@ -543,15 +539,6 @@
                 },
                 "params": [
                     {
-                        "name": "zoom",
-                        "select": {
-                            "type": "interval",
-                            "bind": "scales",
-                            "zoom": "wheel",
-                            "translate": "[mousedown, window:mouseup] > window:mousemove!"
-                        }
-                    },
-                    {
                         "name": "brush",
                         "select": {
                             "type": "interval",
@@ -569,20 +556,13 @@
                 "width": 700,
                 "height": 400,
                 "title": {
-                    "text": ["Air Pollution vs COPD Prevalence by County", "Zoom: Mouse wheel | Pan: Click+drag | Select: Drag box | Reset: Double-click"],
+                    "text": "Air Pollution vs COPD Prevalence by County",
                     "fontSize": 16,
-                    "fontWeight": "bold",
-                    "subtitleFontSize": 12,
-                    "subtitleColor": "gray"
+                    "fontWeight": "bold"
                 }
             };
 
-            vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false}).then(function(result) {
-                // Add double-click to reset zoom
-                result.view.addEventListener('dblclick', function() {
-                    result.view.signal('zoom', null).run();
-                });
-            });
+            vegaEmbed('#scatter-plot-viz', scatterSpec, {actions: false});
         }
 
         // Create water violations chart
